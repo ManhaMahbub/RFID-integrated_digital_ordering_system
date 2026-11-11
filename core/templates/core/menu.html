@@ -1,0 +1,63 @@
+{% extends "core/base.html" %}
+{% block nav %}Order here, pay with your ID card{% endblock %}
+{% block content %}
+<style>
+  .items{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:90px}
+  .item{background:#fff;border-radius:10px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .item.on{outline:2px solid #1f6fd1}
+  .item h3{margin:0 0 4px;font-size:1.1rem}
+  .price{color:#5b6675;margin-bottom:12px}
+  .stepper{display:flex;align-items:center;gap:10px}
+  .stepper button{width:42px;height:42px;font-size:1.4rem;border:0;border-radius:8px;background:#e8eefb;cursor:pointer}
+  .stepper input{width:56px;text-align:center;font-size:1.2rem;padding:8px}
+  .bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #d5dae1;padding:12px 20px;
+       display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .bar .sum{font-size:1.2rem}
+</style>
+<h2>Choose your food</h2>
+{% if error %}<div class="error">{{ error }}</div>{% endif %}
+<form method="post" id="choose">{% csrf_token %}
+  <div class="items">
+    {% for item in items %}
+    <div class="item{% if item.qty %} on{% endif %}" data-price="{{ item.price }}">
+      <h3>{{ item.name }}</h3>
+      <div class="price">{{ item.price }} BDT</div>
+      <div class="stepper">
+        <button type="button" data-step="-1" aria-label="Remove one {{ item.name }}">−</button>
+        <input type="number" name="qty_{{ item.pk }}" min="0" max="20" value="{{ item.qty }}">
+        <button type="button" data-step="1" aria-label="Add one {{ item.name }}">+</button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="bar">
+    <div class="sum"><span id="count">0</span> items · <strong><span id="total">0</span> BDT</strong></div>
+    <button class="btn" type="submit">Go to order</button>
+  </div>
+</form>
+<script>
+  const form = document.getElementById('choose');
+  function recalc() {
+    let total = 0, count = 0;
+    form.querySelectorAll('.item').forEach(card => {
+      const input = card.querySelector('input');
+      const qty = Math.max(0, Math.min(20, parseInt(input.value || '0', 10) || 0));
+      input.value = qty;
+      card.classList.toggle('on', qty > 0);
+      total += qty * parseFloat(card.dataset.price);
+      count += qty;
+    });
+    document.getElementById('total').textContent = total.toFixed(2);
+    document.getElementById('count').textContent = count;
+  }
+  form.addEventListener('click', e => {
+    const btn = e.target.closest('button[data-step]');
+    if (!btn) return;
+    const input = btn.parentElement.querySelector('input');
+    input.value = (parseInt(input.value || '0', 10) || 0) + parseInt(btn.dataset.step, 10);
+    recalc();
+  });
+  form.addEventListener('input', recalc);
+  recalc();
+</script>
+{% endblock %}

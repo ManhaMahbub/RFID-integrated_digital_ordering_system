@@ -1,0 +1,19 @@
+{% extends "core/base.html" %}
+{% block nav %}Balance: {{ balance }} BDT · <a href="{% url 'kiosk_finish' %}">Finish</a>{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="ok">Payment complete. Order {{ order.status|lower }}.</div>
+  <p>Your order number</p>
+  <div class="big">{{ order.number }}</div>
+  <p>Status: <span class="status">{{ order.get_status_display }}</span>
+     {% if order.status == "READY" %} — please collect your food.{% endif %}</p>
+  <table>
+    <tr><th>Item</th><th>Qty</th><th>Price</th></tr>
+    {% for line in order.items.all %}
+    <tr><td>{{ line.menu_item.name }}</td><td>{{ line.quantity }}</td><td>{{ line.unit_price }}</td></tr>
+    {% endfor %}
+    <tr><th colspan="2">Total paid</th><th>{{ order.total }} BDT</th></tr>
+  </table>
+  <p style="color:#5b6675">{{ order.created_at|date:"d M Y, H:i" }} · Paid from card balance. This page refreshes every 5 seconds.</p>
+</div>
+{% endblock %}

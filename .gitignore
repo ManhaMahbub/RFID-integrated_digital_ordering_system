@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+*.sqlite3
+/staticfiles/
+/media/
+*.log
+
+# Secrets (never commit)
+.env
+.env.*
+!.env.example
+
+# Tools and OS
+.vscode/
+.idea/
+.pytest_cache/
+.coverage
+htmlcov/
+.DS_Store
+Thumbs.db

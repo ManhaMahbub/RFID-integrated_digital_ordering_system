@@ -1,0 +1,12 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="card">
+  <h2>Tap your card</h2>
+  <p>Hold your university ID card on the reader. For the demo, type the card number and press Enter.</p>
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+  <form method="post">{% csrf_token %}
+    <input type="text" name="card_uid" autofocus autocomplete="off" placeholder="Card number, e.g. CARD0001">
+    <p><button class="btn" type="submit">Continue</button></p>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "core/base.html" %}
+{% block nav %}{{ account.user.username }} · Balance: {{ balance }} BDT{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>Review and pay · Order {{ order.number }}</h2>
+  <table>
+    <tr><th>Item</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr>
+    {% for line in order.items.all %}
+    <tr><td>{{ line.menu_item.name }}</td><td>{{ line.quantity }}</td><td>{{ line.unit_price }}</td>
+        <td>{% widthratio line.quantity 1 line.unit_price %}</td></tr>
+    {% endfor %}
+    <tr><th colspan="3">Total</th><th>{{ order.total }} BDT</th></tr>
+  </table>
+  {% if error %}<div class="error" style="margin-top:12px">{{ error }}</div>{% endif %}
+  <form method="post" style="margin-top:14px">{% csrf_token %}
+    <input type="hidden" name="idempotency_key" value="{{ key }}">
+    <label>Enter your PIN</label>
+    <input type="password" name="pin" inputmode="numeric" autocomplete="off" autofocus>
+    <p><button class="btn" type="submit">Pay {{ order.total }} BDT</button>
+       <a class="btn secondary" href="{% url 'menu' %}?edit={{ order.pk }}" style="text-decoration:none;display:inline-block">Change items</a></p>
+  </form>
+</div>
+{% endblock %}

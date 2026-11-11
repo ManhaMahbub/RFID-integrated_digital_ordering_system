@@ -1,0 +1,13 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="card">
+  <h2>Staff login</h2>
+  {% if form.errors %}<div class="error">Wrong username or password.</div>{% endif %}
+  <form method="post">{% csrf_token %}
+    <p><input type="text" name="username" autofocus placeholder="Username"></p>
+    <p><input type="password" name="password" placeholder="Password"></p>
+    <input type="hidden" name="next" value="{{ next }}">
+    <p><button class="btn" type="submit">Log in</button></p>
+  </form>
+</div>
+{% endblock %}

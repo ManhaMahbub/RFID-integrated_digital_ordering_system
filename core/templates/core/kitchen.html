@@ -1,0 +1,24 @@
+{% extends "core/base.html" %}
+{% block nav %}{{ request.user.username }} ·
+  <form method="post" action="{% url 'staff_logout' %}" style="display:inline">{% csrf_token %}<button type="submit">Log out</button></form>{% endblock %}
+{% block content %}
+<h2>Kitchen queue</h2>
+<div class="cols">
+  {% for col in columns %}
+  <div>
+    <h3>{{ col.title }} ({{ col.orders|length }})</h3>
+    {% for order in col.orders %}
+    <div class="card">
+      <strong>{{ order.number }}</strong> · {{ order.total }} BDT<br>
+      <small>{{ order.created_at|date:"H:i" }}</small>
+      <ul>{% for line in order.items.all %}<li>{{ line.quantity }} × {{ line.menu_item.name }}</li>{% endfor %}</ul>
+      <form method="post" action="{% url 'advance' order.pk %}">{% csrf_token %}
+        <input type="hidden" name="from_status" value="{{ col.status }}">
+        <button class="btn" type="submit">{{ col.button }}</button>
+      </form>
+    </div>
+    {% empty %}<p style="color:#5b6675">No orders.</p>{% endfor %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "core/base.html" %}
+{% block nav %}<a href="{% url 'menu' %}">Change items</a>{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>Your order</h2>
+  <table>
+    <tr><th>Item</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr>
+    {% for line in lines %}
+    <tr><td>{{ line.item.name }}</td><td>{{ line.qty }}</td><td>{{ line.item.price }}</td><td>{{ line.subtotal }}</td></tr>
+    {% endfor %}
+    <tr><th colspan="3">Total</th><th>{{ total }} BDT</th></tr>
+  </table>
+</div>
+<div class="card">
+  <h2>Pay with your ID card</h2>
+  <p>Tap your card on the reader. For the demo, type the card number.</p>
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+  <form method="post">{% csrf_token %}
+    <input type="hidden" name="idempotency_key" value="{{ key }}">
+    <p><input type="text" name="card_uid" autofocus autocomplete="off" placeholder="Card number, e.g. CARD0001"></p>
+    <p><input type="password" name="pin" inputmode="numeric" autocomplete="off" placeholder="PIN"></p>
+    <p><button class="btn" type="submit">Pay {{ total }} BDT</button>
+       <a class="btn secondary" href="{% url 'menu' %}" style="text-decoration:none;display:inline-block">Change items</a></p>
+  </form>
+</div>
+{% endblock %}
